@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, Redirect, withRouter } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { isAuthenticated, signout } from '../auth';
 
 const isActive = (history, path) => {
@@ -19,6 +19,20 @@ const Menu = ({ history }) => {
                         Home
                     </Link>
                 </li>
+                {isAuthenticated() && isAuthenticated().user.role === 0 && (
+                    <li className="nav-item">
+                    <Link className="nav-link" style={isActive(history, '/user/dashboard')} to="/user/dashboard">
+                        Dashboard
+                    </Link>
+                </li>
+                )}
+                {isAuthenticated() && isAuthenticated().user.role === 1 && (
+                    <li className="nav-item">
+                    <Link className="nav-link" style={isActive(history, '/admin/dashboard')} to="/admin/dashboard">
+                        Dashboard
+                    </Link>
+                </li>
+                )}
                 {!isAuthenticated() && (
                     <>
                         <li className="nav-item">
