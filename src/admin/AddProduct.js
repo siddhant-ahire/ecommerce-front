@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
 import Layout from '../core/Layout';
-import { createNewProduct } from './apiAdmin';
+import { createNewProduct, getCategories } from './apiAdmin';
 
 const AddProduct = () => {
 
@@ -38,10 +38,20 @@ const AddProduct = () => {
 
     //destructure user and token from localstorage
 
-    const { user, token } = isAuthenticated()
+    const { user, token } = isAuthenticated();
+
+    const init = () => {
+        getCategories().then(data => {
+            if(data.error){
+                setValues({...values, error:data.error})
+            } else {
+                setValues({...values, categories:data,formData: new FormData()})
+            }
+        })
+    }
 
     useEffect(()=> {
-        setValues({...values, formData: new FormData()})
+        init();
     }, [])
     
     const handleChange = name => event => {
@@ -59,7 +69,7 @@ const AddProduct = () => {
                 setValues({...values, error:data.error})
             } else {
                 setValues({
-                    ...values, name:"", description:"", photo:"", price:"", quantity:"", loading:false, createProduct:data.name
+                    ...values, name:"", description:"", photo:"", price:"", quantity:"",error:'', loading:false, createProduct:data.name
                 })
             }
             
@@ -89,9 +99,8 @@ const AddProduct = () => {
             <div className="form-group">
                 <label className="text-muted">Category</label>
                 <select onChange={handleChange('category')} className="form-control" >
-                    <option value="60ae523d939bb73330675318">Python</option>
-                    <option value="60ae523d939bb73330675318">Python</option>
-
+                    <option>Please select</option>
+                    {categories&&categories.map((c,i) => (<option value={c._id} key={i}>{c.name}</option>))}
                 </select>
             </div>
             <div className="form-group">
@@ -109,7 +118,22 @@ const AddProduct = () => {
         </form>
     )
 
+    const showError = () => (
+        <div className="alert alert-danger" style={{display:error ? '' :'none'}}>
+            {error}
+        </div>
+    )
+    const showSuccess = () => (
+        <div className="alert alert-info" style={{display:createProduct ? '' :'none'}}>
+            <h2>{`${createProduct}`} is created!</h2>
+        </div>
+    )
 
+    const showLoading = () => (
+        loading && (<div className="alert alert-success">
+            <h2>loading...</h2>
+        </div>)
+    )
     const goBack = () => (
         <div className="mt-5">
             <Link to="/admin/dashboard" className="text-warning">
@@ -123,6 +147,9 @@ const AddProduct = () => {
         <Layout title="Add a new product" description={`G'day ${user.name}, ready to add a new product`} className="container">
             <div className="row">
                 <div className="col-md-8 offset-md-2">
+                    {showError()}
+                    {showLoading()}
+                    {showSuccess()}
                     {newPostForm()}
                     {goBack()}
                 </div>
