@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getProducts } from './apiCore';
 import Card from './Card';
+import Search from './Search';
 import Layout from './Layout'
 
 const Home = () => {
@@ -35,7 +36,7 @@ const Home = () => {
     return (
         <div>
             <Layout title="Home Page" description="Node React E-commerce App" className="container-fluid">
-                
+                <Search/>
                 <h2 className="mb-4">Best Sellers</h2>
                 <div className='row'>
                 {productBySell.map((product,i) => (
